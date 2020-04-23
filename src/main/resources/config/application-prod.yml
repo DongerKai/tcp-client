@@ -1,0 +1,5 @@
+logging:
+  file:
+    max-history: 3
+  level:
+    root: info
