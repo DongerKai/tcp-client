@@ -1,7 +1,6 @@
 package com.c503.tcp.client.service.impl;
 
 import com.c503.tcp.client.core.client.ClientServer;
-import com.c503.tcp.client.core.server.ServerContext;
 import com.c503.tcp.client.model.ApiResult;
 import com.c503.tcp.client.model.ClientConnectVo;
 import com.c503.tcp.client.service.IMainService;
@@ -14,7 +13,7 @@ import org.springframework.stereotype.Service;
 import static com.c503.tcp.client.constant.Constants.State.SUCCESS;
 
 /**
- * TODO
+ * 客户端 启动
  *
  * @author DongerKai
  * @since 2020/4/23 13:02 ，1.0
@@ -27,7 +26,6 @@ public class ClientStartServiceImpl implements IMainService<Object, ClientConnec
 
 
     @Override
-    @SuppressWarnings("unchecked")
     public ApiResult<Object> doWork(ClientConnectVo clientConnect) {
         log.info(clientConnect.toString());
         clientServer.startServer(clientConnect);
