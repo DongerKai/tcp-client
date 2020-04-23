@@ -1,0 +1,26 @@
+stages:
+  - build
+
+cache:
+  paths:
+    - iots-basic-data/static/node_modules/
+    - iots-basic-data/static/dist/
+    - iots-screen/static/node_modules/
+    - iots-screen/static/dist/
+  
+build:
+  stage: build
+  script:
+    - WORK_DIR=$(pwd)
+    - mvn clean package -Dmaven.test.skip=true
+    - cd iots-basic-data/static
+    - npm install
+    - npm run build
+    - cd $WORK_DIR
+    - cd iots-screen/static
+    - npm install
+    - npm run build
+    - cd $WORK_DIR
+  only:
+    - master
+

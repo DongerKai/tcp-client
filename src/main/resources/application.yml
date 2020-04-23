@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: tcp-client
+  profiles:
+    active: dev
+
+logging:
+  file: log/${tcp-client.name}.log
+
+tcp-client:
+  name: tcp-client
