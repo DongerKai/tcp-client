@@ -1,0 +1,10 @@
+logging:
+  file:
+    max-history: 3
+  level:
+    root: info
+    org:
+      springframework:
+        jdbc: debug
+    com:
+      c503: debug
