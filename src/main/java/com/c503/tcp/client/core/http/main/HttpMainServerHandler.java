@@ -66,9 +66,7 @@ public class HttpMainServerHandler extends ChannelInboundHandlerAdapter {
                 sendResponse(ctx,method,req,ApiResult.create(SYSTEM_BUSY));
                 return;
             }
-            HttpMainThread httpMainThread = new HttpMainThread();
-            httpMainThread.setVo(vo);
-            new Thread(httpMainThread).start();
+            new Thread(new HttpMainThread(vo),"http执行线程").start();
             sendResponse(ctx,method,req,ApiResult.create(SUCCESS));
         }catch (Exception e) {
             sendResponse(ctx,method,req,ApiResult.create(SYSTEM_ERROR),e);
