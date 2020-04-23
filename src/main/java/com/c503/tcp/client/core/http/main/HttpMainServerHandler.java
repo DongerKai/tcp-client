@@ -66,7 +66,10 @@ public class HttpMainServerHandler extends ChannelInboundHandlerAdapter {
                 sendResponse(ctx,method,req,ApiResult.create(SYSTEM_BUSY));
                 return;
             }
-            sendResponse(ctx,method,req,service.doWork(vo));
+            HttpMainThread httpMainThread = new HttpMainThread();
+            httpMainThread.setVo(vo);
+            new Thread(httpMainThread).start();
+            sendResponse(ctx,method,req,ApiResult.create(SUCCESS));
         }catch (Exception e) {
             sendResponse(ctx,method,req,ApiResult.create(SYSTEM_ERROR),e);
         }finally {
@@ -101,9 +104,9 @@ public class HttpMainServerHandler extends ChannelInboundHandlerAdapter {
     /**
      * 返回结果
      */
-    private void sendResponse(ChannelHandlerContext ctx,String method,String req,ApiResult<?> result,Exception e){
+    private void sendResponse(ChannelHandlerContext ctx,String method,String req,ApiResult<?> result,Exception e) {
         String resp = JsonUtils.writeValueAsString(result);
-        log.info("channel method:{},req:{},resp:{}",method,req, resp,e);
+        log.info("channel method:{},req:{},resp:{}", method, req, resp, e);
         FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, OK, Unpooled.wrappedBuffer(resp.getBytes()));
         response.headers().set(CONTENT_TYPE, APPLICATION_JSON);
         response.headers().set(CONTENT_LENGTH, response.content().readableBytes());
