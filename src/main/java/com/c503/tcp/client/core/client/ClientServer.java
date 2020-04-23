@@ -120,7 +120,9 @@ public class ClientServer implements IServerService<ClientConnectVo> {
 
     @Override
     public void logEndTime() {
-        log.info("=============发送结束时间:{}============", System.currentTimeMillis());
+        long receiveEnd = System.currentTimeMillis();
+        log.info("=============发送结束时间:{}============", receiveEnd);
+        log.info("============QPS:{}===========", size*1000/(receiveEnd-sendBegin));
     }
 
     @Override
@@ -136,11 +138,11 @@ public class ClientServer implements IServerService<ClientConnectVo> {
 
     @Override
     public void computeTime(ChannelHandlerContext ctx) {
-        if (amount>800000){
-            long receiveEnd = System.currentTimeMillis();
-            log.info("最后一个回包接收时间：{},总共收到：{}", receiveEnd, amount);
-            log.info("============QPS:{}===========", size*1000/(receiveEnd-sendBegin));
-        }
+//        if (amount>800000){
+//            long receiveEnd = System.currentTimeMillis();
+//            log.info("最后一个回包接收时间：{},总共收到：{}", receiveEnd, amount);
+//            log.info("============QPS:{}===========", size*1000/(receiveEnd-sendBegin));
+//        }
 
     }
 
