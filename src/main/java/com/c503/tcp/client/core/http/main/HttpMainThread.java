@@ -2,6 +2,7 @@ package com.c503.tcp.client.core.http.main;
 
 
 import com.c503.tcp.client.context.SpringContextHolder;
+import com.c503.tcp.client.service.IMainService;
 import com.c503.tcp.client.service.IServerService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,6 +17,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class HttpMainThread implements Runnable {
 
+    private IMainService mainService;
     private Object vo;
 
     @Override
@@ -23,7 +25,6 @@ public class HttpMainThread implements Runnable {
      * 重写run方法,该方法同样是该线程的线程执行体
      */
     public void run() {
-        IServerService serverService = SpringContextHolder.getBean("ClientServer", IServerService.class);
-        serverService.startServer(vo);
+        mainService.doWork(vo);
     }
 }

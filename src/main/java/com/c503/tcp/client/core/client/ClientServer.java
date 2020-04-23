@@ -52,6 +52,9 @@ public class ClientServer implements IServerService<ClientConnectVo> {
     @Getter
     @Setter
     private ChannelFuture channelFuture;
+    @Getter
+    @Setter
+    private int amount = 0;
 
     @Override
     public void startServer(ClientConnectVo clientConnect) {
@@ -132,9 +135,13 @@ public class ClientServer implements IServerService<ClientConnectVo> {
 
     @Override
     public void computeTime(ChannelHandlerContext ctx) {
-        long receiveEnd = System.currentTimeMillis();
-        log.info("最后一个回包接收时间：{}", receiveEnd);
-        log.info("============QPS:{}===========", size*1000/(receiveEnd-sendBegin));
+        amount++;
+        if (size-amount<10){
+            long receiveEnd = System.currentTimeMillis();
+            log.info("最后一个回包接收时间：{},总共收到：{}", receiveEnd, amount);
+            log.info("============QPS:{}===========", size*1000/(receiveEnd-sendBegin));
+        }
+
     }
 
 
