@@ -196,7 +196,6 @@ concat_lines() {
 }
 
 BASE_DIR=`find_maven_basedir "$(pwd)"`
-echo "base_dir:$BASE_DIR";
 if [ -z "$BASE_DIR" ]; then
   exit 1;
 fi
@@ -213,6 +212,7 @@ else
     if [ "$MVNW_VERBOSE" = true ]; then
       echo "Couldn't find .mvn/wrapper/maven-wrapper.jar, downloading it ..."
     fi
+    echo "=============download========="
     jarUrl="https://repo.maven.apache.org/maven2/io/takari/maven-wrapper/0.4.2/maven-wrapper-0.4.2.jar"
     while IFS="=" read key value; do
       case "$key" in (wrapperUrl) jarUrl="$value"; break ;;
