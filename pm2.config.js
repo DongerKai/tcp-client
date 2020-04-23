@@ -5,7 +5,7 @@ module.exports = {
             script: 'java',
             args: [
                 '-jar',
-                'target/tcp-client-0.1.0.jar'
+                'target/tcp-client-0.0.1.jar'
             ],
             cwd: '.',
             interpreter: ''
