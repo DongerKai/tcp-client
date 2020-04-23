@@ -1,0 +1,42 @@
+#!/bin/sh
+cd `dirname $0`
+CURRENT=`date "+%Y-%m-%dT%H:%M:%S"`
+WORK_DIR=$(pwd)
+WORK_DIR_P=$(dirname $WORK_DIR)
+        read -p "Please Enter Package Version: " VERSION
+        if [ $VERSION ]
+        then
+            NAME_VERSION=$NAME-$VERSION
+        fi
+        echo "Package to "$WORK_DIR_P/$NAME_VERSION" !"
+        ./mvnw clean package -DskipTests
+        if [ -d $WORK_DIR_P/$NAME_VERSION ]
+        then 
+            mv $WORK_DIR_P/$NAME_VERSION $WORK_DIR_P/$NAME_VERSION-$CURRENT
+        fi
+        mkdir $WORK_DIR_P/$NAME_VERSION
+        cp -r $WORK_DIR/target/$NAME-0.0.1.jar $WORK_DIR_P/$NAME_VERSION
+        mv $WORK_DIR_P/$NAME_VERSION/$NAME-0.0.1.jar $WORK_DIR_P/$NAME_VERSION/$NAME_VERSION.jar
+        (
+            echo '#!/bin/sh'
+            echo 'cd `dirname $0`'
+            echo pm2 restart pm2.config.js  
+        ) > $WORK_DIR_P/$NAME_VERSION/deploy
+        chmod a+x $WORK_DIR_P/$NAME_VERSION/deploy
+        (
+            echo 'module.exports = {'
+            echo '   apps: ['
+            echo '       {'
+            echo '           'name: \'$NAME_VERSION\',
+            echo '           'script: \'java\',
+            echo '           args: ['
+            echo '               '\'-jar\',
+            echo '               '\'$NAME_VERSION.jar\'
+            echo '           ],'
+            echo '           'cwd: \'.\',
+            echo '           'interpreter: \'\'
+            echo '       }'
+            echo '   ]'
+            echo '}'
+        ) > $WORK_DIR_P/$NAME_VERSION/pm2.config.js
+        exit 0
