@@ -135,8 +135,7 @@ public class ClientServer implements IServerService<ClientConnectVo> {
 
     @Override
     public void computeTime(ChannelHandlerContext ctx) {
-        amount++;
-        if (size-amount<10){
+        if (amount>800000){
             long receiveEnd = System.currentTimeMillis();
             log.info("最后一个回包接收时间：{},总共收到：{}", receiveEnd, amount);
             log.info("============QPS:{}===========", size*1000/(receiveEnd-sendBegin));
