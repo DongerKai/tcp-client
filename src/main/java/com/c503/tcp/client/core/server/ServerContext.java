@@ -36,27 +36,11 @@ public class ServerContext {
         if(mainHttpServer == null){//添加主服务
             log.info("添加主服务:{}",server.getFuture().channel().toString());
             mainHttpServer = server;
-            servers = new ConcurrentHashMap<Integer, ClientConnectVo>();
+            servers = new ConcurrentHashMap<>();
         }else{//添加协议子服务
             log.info("添加客户端:{},{}",server.getId(),server.getFuture().channel().toString());
             servers.put(server.getId(),server);
         }
-    }
-
-    /**
-     * 销毁协议子服务
-     */
-    public boolean destroyServer(Integer id){
-        ClientConnectVo server = servers.get(id);
-        if(server == null) {//销毁协议子服务不存在,直接返回
-            log.info("销毁协议子服务:{},不存在！",id);
-            return false;
-        }
-        log.info("销毁协议子服务:{},{}",id,server.getFuture().channel().toString());
-        server.getFuture().channel().close();
-        servers.remove(id);
-        //修改数据库状态
-        return true;
     }
 
     /**
@@ -71,11 +55,11 @@ public class ServerContext {
         }
         if(!CollectionUtils.isEmpty(servers)){//判断是否有协议子服务可以销毁
             servers.forEach((k,v)->{
-                log.info("销毁协议子服务:{},{}",k,v.getFuture().channel().toString());
+                log.info("关闭所有连接:{},{}",k,v.getFuture().channel().toString());
                 v.getFuture().channel().close();
             });
             servers.clear();
         }
-        log.info("销毁所有服务完成！");
+        log.info("关闭所有连接完成！");
     }
 }

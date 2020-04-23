@@ -8,4 +8,6 @@ public interface IServerService<T> {
     void stopServer();
 
     void computeTime(ChannelHandlerContext ctx);
+
+    void logEndTime();
 }

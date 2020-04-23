@@ -13,10 +13,10 @@ import lombok.Data;
 public class ClientConnectVo {
     private String ip;
     private Integer port;
-    private Integer totalThreads;//总线程
+    private Integer connections;//总连接
     private ChannelFuture future;
     private Integer id;
     private String msg;
-    private Integer clientPer;//每次使用的线程数
-    private Integer requestPer;//每个线程的请求数
+    private Integer threads;//使用的线程数
+    private Integer cycleTimes;//循环次数
 }

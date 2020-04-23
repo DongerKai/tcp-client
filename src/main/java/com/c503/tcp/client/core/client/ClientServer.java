@@ -19,6 +19,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 /**
  * hj212Server
  *
@@ -34,11 +39,15 @@ public class ClientServer implements IServerService<ClientConnectVo> {
 
     @Getter
     @Setter
-    private Integer size;
+    private long sendBegin;
 
     @Getter
     @Setter
-    private long sendBegin;
+    private long size;
+
+    @Getter
+    @Setter
+    private Map<Channel, Integer> map;
 
     @Getter
     @Setter
@@ -55,27 +64,20 @@ public class ClientServer implements IServerService<ClientConnectVo> {
             long connectEnd = System.currentTimeMillis();
             log.info("============connect end :{} ======", connectEnd);
             log.info("===========连接建立时间：{}======", connectEnd-connectStart);
-            size = clientConnect.getClientPer()*clientConnect.getRequestPer()-1;
-            long sendStart = System.currentTimeMillis();
-            sendBegin = sendStart;
-            log.info("============send start :{} ======", sendStart);
+            size = clientConnect.getThreads()*clientConnect.getCycleTimes();
             send(clientConnect);
-            long sendEnd = System.currentTimeMillis();
-            log.info("============send end :{} ======", sendEnd);
-            log.info("===========执行请求时间：{}======", sendEnd-sendStart);
-            log.info("===========发送QPS：{}/s======", (clientConnect.getClientPer()*clientConnect.getRequestPer())*1000/(sendEnd-sendStart));
-
         }catch (Exception e){
             log.error("连接有误",e);
         }
     }
 
     private void connect(ClientConnectVo clientConnect){
-        int id = clientConnect.getId();
-        for (int i = 0; i<clientConnect.getTotalThreads(); i++){
+        for (int i = 0; i<clientConnect.getConnections(); i++){
             try {
-                ClientConnectVo client = CopyUtils.copy(clientConnect, ClientConnectVo.class);
-                client.setId(id+i);
+                ClientConnectVo client = new ClientConnectVo();
+                client.setId(i);
+                client.setIp(clientConnect.getIp());
+                client.setPort(clientConnect.getPort());
                 start(client);
             }catch (Exception e){
                 throw new RuntimeException(e);
@@ -99,17 +101,22 @@ public class ClientServer implements IServerService<ClientConnectVo> {
 
     private void send(ClientConnectVo clientConnect){
         byte[] bytes = HexBytesStringUtils.hexStringToBytes(clientConnect.getMsg());
-        int count = 0;
-        for (int i = 0; i< clientConnect.getRequestPer(); i++){
-            for (int j = 0; j< clientConnect.getClientPer(); j++){
-                int place = (i*clientConnect.getClientPer()+j)%clientConnect.getTotalThreads();
-                serverContext.getServers().get(place).getFuture().channel().writeAndFlush(Unpooled.wrappedBuffer(bytes));
-                count++;
-                if (count == size)
-                    channelFuture = serverContext.getServers().get(place).getFuture();
-            }
+        List<ChannelFuture> channelFutureList = serverContext.getServers().values().stream().map(ClientConnectVo::getFuture).collect(Collectors.toList());
+        int interval = channelFutureList.size()/clientConnect.getThreads();
+        int tail = channelFutureList.size()%clientConnect.getThreads();
+        long sendStart = System.currentTimeMillis();
+        sendBegin = sendStart;
+        log.info("============send start :{} ======", sendStart);
+        for (int i = 0; i < clientConnect.getThreads(); i++){
+            int begin = tail > i? i*interval+i: i*interval+tail;
+            int end = tail > i? (i+1)*interval+i : (i+1)*interval-1+tail;
+            new Thread(new SendThread(channelFutureList.subList(begin, end+1), clientConnect.getCycleTimes(), bytes), "sendThread-"+i).start();
         }
-        log.info("总次数：{}", count);
+    }
+
+    @Override
+    public void logEndTime() {
+        log.info("=============发送结束时间:{}============", System.currentTimeMillis());
     }
 
     @Override
@@ -125,12 +132,9 @@ public class ClientServer implements IServerService<ClientConnectVo> {
 
     @Override
     public void computeTime(ChannelHandlerContext ctx) {
-//        log.info("最后一个回包接收时间：{}", System.currentTimeMillis());
-//        if (ctx.channel() == channelFuture.channel()){
         long receiveEnd = System.currentTimeMillis();
         log.info("最后一个回包接收时间：{}", receiveEnd);
-        log.info("=============收到QPS:{}===========", size*1000/(receiveEnd-sendBegin));
-//        }
+        log.info("============QPS:{}===========", size*1000/(receiveEnd-sendBegin));
     }
 
 
