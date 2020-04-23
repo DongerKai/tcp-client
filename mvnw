@@ -212,6 +212,7 @@ else
     if [ "$MVNW_VERBOSE" = true ]; then
       echo "Couldn't find .mvn/wrapper/maven-wrapper.jar, downloading it ..."
     fi
+    echo "$$MVNW_VERBOSE"
     echo "=============download========="
     jarUrl="https://repo.maven.apache.org/maven2/io/takari/maven-wrapper/0.4.2/maven-wrapper-0.4.2.jar"
     while IFS="=" read key value; do
