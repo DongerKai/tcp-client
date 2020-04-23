@@ -38,7 +38,7 @@ public class ServerContext {
             mainHttpServer = server;
             servers = new ConcurrentHashMap<>();
         }else{//添加协议子服务
-            log.info("添加客户端:{},{}",server.getId(),server.getFuture().channel().toString());
+//            log.info("添加客户端:{},{}",server.getId(),server.getFuture().channel().toString());
             servers.put(server.getId(),server);
         }
     }

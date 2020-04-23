@@ -68,7 +68,7 @@ public class ClientServer implements IServerService<ClientConnectVo> {
             log.info("============connect end :{} ======", connectEnd);
             log.info("===========连接建立时间：{}======", connectEnd-connectStart);
             size = clientConnect.getThreads()*clientConnect.getCycleTimes();
-            send(clientConnect);
+//            send(clientConnect);
         }catch (Exception e){
             log.error("连接有误",e);
         }
@@ -82,6 +82,7 @@ public class ClientServer implements IServerService<ClientConnectVo> {
                 client.setIp(clientConnect.getIp());
                 client.setPort(clientConnect.getPort());
                 start(client);
+                log.info("============connect finish ======");
             }catch (Exception e){
                 throw new RuntimeException(e);
             }
