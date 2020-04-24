@@ -9,6 +9,7 @@ package com.c503.tcp.client.core.client;
 
 import com.c503.tcp.client.context.SpringContextHolder;
 import com.c503.tcp.client.service.IServerService;
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -30,8 +31,10 @@ public class ClientHandler extends SimpleChannelInboundHandler {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
-        IServerService serverService = SpringContextHolder.getBean("ClientServer", IServerService.class);
-        serverService.computeTime(ctx);
+        ByteBuf byteBuf = (ByteBuf) msg;
+        byteBuf.release();
+//        IServerService serverService = SpringContextHolder.getBean("ClientServer", IServerService.class);
+//        serverService.computeTime(ctx);
     }
 
     @Override
