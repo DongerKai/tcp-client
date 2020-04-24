@@ -138,11 +138,12 @@ public class ClientServer implements IServerService<ClientConnectVo> {
         Integer value = map.get(ctx.channel());
         if (value == null)
             return;
-        if (value == 1){
-            long receiveEnd = System.currentTimeMillis();
-            log.info("==============最后一个回包接收时间：{},channel:{}, QPS:{}/s=============", receiveEnd, ctx.channel(), size*1000/(receiveEnd-sendBegin));
-        }
         map.put(ctx.channel(), value-1);
+        if (value == 0 || value < 0){
+            long receiveEnd = System.currentTimeMillis();
+            log.info("==============最后一个回包接收时间：{}, map中value值:{} ,channel:{}, QPS:{}/s=============", receiveEnd, value, ctx.channel(), size*1000/(receiveEnd-sendBegin));
+        }
+
     }
 
 
