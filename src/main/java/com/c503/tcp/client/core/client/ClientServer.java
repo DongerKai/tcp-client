@@ -3,10 +3,8 @@ package com.c503.tcp.client.core.client;
 import com.c503.tcp.client.core.server.ServerContext;
 import com.c503.tcp.client.model.ClientConnectVo;
 import com.c503.tcp.client.service.IServerService;
-import com.c503.tcp.client.utils.CopyUtils;
 import com.c503.tcp.client.utils.HexBytesStringUtils;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
@@ -19,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -49,13 +47,6 @@ public class ClientServer implements IServerService<ClientConnectVo> {
     @Setter
     private Map<Channel, Integer> map;
 
-    @Getter
-    @Setter
-    private ChannelFuture channelFuture;
-    @Getter
-    @Setter
-    private int amount = 0;
-
     @Override
     public void startServer(ClientConnectVo clientConnect) {
         try{
@@ -68,6 +59,7 @@ public class ClientServer implements IServerService<ClientConnectVo> {
             log.info("============connect end :{} ======", connectEnd);
             log.info("===========连接建立时间：{}======", connectEnd-connectStart);
             size = clientConnect.getThreads()*clientConnect.getCycleTimes();
+            map = new HashMap<>();
             send(clientConnect);
         }catch (Exception e){
             log.error("连接有误",e);
@@ -119,6 +111,11 @@ public class ClientServer implements IServerService<ClientConnectVo> {
     }
 
     @Override
+    public void count(Channel channel) {
+        map.put(channel, map.get(channel) == null? 1: map.get(channel)+1);
+    }
+
+    @Override
     public void logEndTime() {
         long receiveEnd = System.currentTimeMillis();
         log.info("=============发送结束时间:{}============", receiveEnd);
@@ -138,12 +135,14 @@ public class ClientServer implements IServerService<ClientConnectVo> {
 
     @Override
     public void computeTime(ChannelHandlerContext ctx) {
-//        if (amount>800000){
-//            long receiveEnd = System.currentTimeMillis();
-//            log.info("最后一个回包接收时间：{},总共收到：{}", receiveEnd, amount);
-//            log.info("============QPS:{}===========", size*1000/(receiveEnd-sendBegin));
-//        }
-
+        Integer value = map.get(ctx.channel());
+        if (value == null)
+            return;
+        if (value == 1){
+            long receiveEnd = System.currentTimeMillis();
+            log.info("==============最后一个回包接收时间：{},channel:{}, QPS:{}/s=============", receiveEnd, ctx.channel(), size*1000/(receiveEnd-sendBegin));
+        }
+        map.put(ctx.channel(), value-1);
     }
 
 

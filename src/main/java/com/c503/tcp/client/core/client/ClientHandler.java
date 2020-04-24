@@ -32,9 +32,10 @@ public class ClientHandler extends SimpleChannelInboundHandler {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
         ByteBuf byteBuf = (ByteBuf) msg;
+        IServerService serverService = SpringContextHolder.getBean("ClientServer", IServerService.class);
+        serverService.computeTime(ctx);
         byteBuf.release();
-//        IServerService serverService = SpringContextHolder.getBean("ClientServer", IServerService.class);
-//        serverService.computeTime(ctx);
+
     }
 
     @Override
