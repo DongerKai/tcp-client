@@ -136,7 +136,7 @@ public class ClientServer implements IServerService<ClientConnectVo> {
     @Override
     public void computeTime(ChannelHandlerContext ctx) {
         long receiveEnd = System.currentTimeMillis();
-        log.info("==============最后一个回包接收时间：{},channel:{}, QPS:{}/s=============", receiveEnd ctx.channel(), size*1000/(receiveEnd-sendBegin));
+        log.info("==============最后一个回包接收时间：{},channel:{}, QPS:{}/s=============", receiveEnd ,ctx.channel(), size*1000/(receiveEnd-sendBegin));
 
 //        Integer value = map.get(ctx.channel());
 //        if (value == null)
