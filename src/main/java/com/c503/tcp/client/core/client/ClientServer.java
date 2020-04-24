@@ -82,11 +82,11 @@ public class ClientServer implements IServerService<ClientConnectVo> {
                 client.setIp(clientConnect.getIp());
                 client.setPort(clientConnect.getPort());
                 start(client);
-                log.info("============connect finish ======");
             }catch (Exception e){
                 throw new RuntimeException(e);
             }
         }
+        log.info("============connect finish ======");
     }
 
     private void start(ClientConnectVo t) throws InterruptedException {
