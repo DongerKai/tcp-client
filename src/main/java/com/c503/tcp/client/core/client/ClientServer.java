@@ -82,7 +82,7 @@ public class ClientServer implements IServerService<ClientConnectVo> {
     }
 
     private void start(ClientConnectVo t) throws InterruptedException {
-        final EventLoopGroup bossGroup = new NioEventLoopGroup();//创建接收线程
+        final EventLoopGroup bossGroup = new NioEventLoopGroup(4);//创建线程
         Bootstrap b = new Bootstrap();
         b.group(bossGroup).channel(NioSocketChannel.class).handler(getChannelInitializer());
         this.setOption(b);//设置socket option
@@ -125,10 +125,8 @@ public class ClientServer implements IServerService<ClientConnectVo> {
     @Override
     public void stopServer(){
         if(!CollectionUtils.isEmpty(serverContext.getServers())){//判断是否有协议子服务可以销毁
-            serverContext.getServers().forEach((k,v)->{
-                log.info("断开客户端连接:{},{}",k,v.getFuture().channel().toString());
-                v.getFuture().channel().close();
-            });
+            serverContext.getServers().forEach((k,v)->v.getFuture().channel().close());
+            log.info("断开客户端连接");
             serverContext.getServers().clear();
         }
     }
