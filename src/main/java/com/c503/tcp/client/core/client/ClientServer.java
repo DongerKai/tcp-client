@@ -133,14 +133,16 @@ public class ClientServer implements IServerService<ClientConnectVo> {
 
     @Override
     public void computeTime(ChannelHandlerContext ctx) {
-//        log.info("==============最后一个回包接收时间：{},channel:{}, QPS:{}/s=============", receiveEnd ,ctx.channel(), size*1000/(receiveEnd-sendBegin));
-        if ( map.get(ctx.channel()) == null)
-            return;
-        map.put(ctx.channel(),  map.get(ctx.channel())-1);
-        if ( map.get(ctx.channel()) == 0 ||  map.get(ctx.channel()) < 0){
-            long receiveEnd = System.currentTimeMillis();
-            log.info("==============最后一个回包接收时间：{}, map中value值:{} ,channel:{}, QPS:{}/s=============", receiveEnd,  map.get(ctx.channel()), ctx.channel(), size*1000/(receiveEnd-sendBegin));
-        }
+        long receiveEnd = System.currentTimeMillis();
+        log.info("==============最后一个回包接收时间：{},channel:{}, QPS:{}/s=============", receiveEnd ,ctx.channel(), size*1000/(receiveEnd-sendBegin));
+//        Integer value = map.get(ctx.channel());
+//        if (value == null)
+//            return;
+//        map.put(ctx.channel(), value-1);
+//        if (value == 0 || value < 0){
+//            long receiveEnd = System.currentTimeMillis();
+//            log.info("==============最后一个回包接收时间：{}, map中value值:{} ,channel:{}, QPS:{}/s=============", receiveEnd, value, ctx.channel(), size*1000/(receiveEnd-sendBegin));
+//        }
 
     }
 
