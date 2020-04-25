@@ -32,8 +32,8 @@ public class SendThread implements Runnable {
 //            IServerService serverService = SpringContextHolder.getBean("ClientServer", IServerService.class);
 //            serverService.count(connects.get(place).channel());
         }
-        IServerService serverService = SpringContextHolder.getBean("ClientServer", IServerService.class);
-        serverService.logEndTime();
+//        IServerService serverService = SpringContextHolder.getBean("ClientServer", IServerService.class);
+//        serverService.logEndTime();
     }
 
 }
