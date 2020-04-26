@@ -67,9 +67,10 @@ public class ClientServer implements IServerService<ClientConnectVo> {
     }
 
     private void connect(ClientConnectVo clientConnect){
+        ClientConnectVo client;
         for (int i = 0; i<clientConnect.getConnections(); i++){
             try {
-                ClientConnectVo client = new ClientConnectVo();
+                client = new ClientConnectVo();
                 client.setId(i);
                 client.setIp(clientConnect.getIp());
                 client.setPort(clientConnect.getPort());
