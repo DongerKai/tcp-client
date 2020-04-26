@@ -3,6 +3,7 @@ package com.c503.tcp.client.core.http.main;
 import com.c503.tcp.client.context.SpringContextHolder;
 import com.c503.tcp.client.core.http.HttpConfig;
 import com.c503.tcp.client.core.server.ServerContext;
+import com.c503.tcp.client.properties.TcpClientProperties;
 import com.c503.tcp.client.utils.LocalHostUtils;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
@@ -31,6 +32,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class HttpMainServer {
     @NonNull private ServerContext serverContext;
+    @NonNull private TcpClientProperties tcpClientProperties;
     public void mainStart() {
         try {
             ServerContext.getServerLock().lock();
@@ -38,7 +40,7 @@ public class HttpMainServer {
             String ip = LocalHostUtils.getLocalHost();
             log.info(" 本地ip:{}",ip);
             //启动http主服务
-            start(HttpConfig.getMain(6601, 1));
+            start(HttpConfig.getMain(tcpClientProperties.getPort(), 1));
             //启动激活中的协议子服务
             log.info("服务启动成功！*★,°*:.☆(￣▽￣)/$:*.°★* 。");
         }catch (Exception e){

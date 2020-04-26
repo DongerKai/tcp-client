@@ -9,3 +9,4 @@ logging:
 
 tcp-client:
   name: tcp-client
+  port: 6601
